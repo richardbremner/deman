@@ -17,7 +17,7 @@ body {
   fill: steelblue;
 }
 
-.line {
+.scopeLine, .scopeLineLater {
   fill: none;
   stroke: forestgreen;
   stroke-width: 2.5px;
@@ -30,13 +30,6 @@ body {
   stroke-width: 2.5px;
 }
 
-.meet {
-  fill: none;
-  stroke: forestgreen;
-  stroke-dasharray: 5, 5;
-  stroke-width: 2.5px;
-}
-
 .continuedScope {
   fill: none;
   stroke-dasharray: 5,3
@@ -45,7 +38,6 @@ body {
 
 </style>
 <body>
-    <a href="javascript:void(0)" class="filter">Filter</a>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -74,17 +66,13 @@ var area = d3.svg.area()
     .y0(height)
     .y1(function(d) { return y(d.Production); });
 
-var line = d3.svg.line()
+var scopeLine = d3.svg.line()
     .x(function(d) { return x(d.Date); })
     .y(function(d) { return y(d.Scope); });
 
 var trend = d3.svg.line()
     .x(function(d) { return x(d.Date); })
     .y(function(d) { return y(d.Value); });
-
-var meet = d3.svg.line()
-    .x(function(d) { return x(d.Date); })
-    .y(function(d) { return y(d.Scope); });
 
 
 var scopeChangeContinuations
@@ -127,20 +115,16 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .attr("class", "areaLater");
 
   svg.append("path")
-      .attr("class", "line")
-      .attr("d", line(data));
+      .attr("class", "scopeLine")
+      .attr("d", scopeLine(data));
+
+      svg.append("path")
+          .attr("class", "scopeLineLater");
 
   var trendData = [{ Date: endDate, Value: endValue }, { Date: projDate, Value: projScope }];
   svg.append("path")
       .attr("class", "trend")
       .attr("d", trend(trendData));
-
-  var meetData = data.slice(0);
-  svg.append("path")
-      .attr("class", "meet")
-      .attr("d", meet(meetData));
-
-
 
   svg.append("g")
       .attr("class", "x axis")
@@ -156,11 +140,6 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Cards");
-
-  d3.selectAll(".filter")
-    .on("click", function() {
-        update(data, "01/01/2016");
-    });
 
         d3.select("body").on('mousemove', function () {
             var xPos = d3.mouse(this)[0];
@@ -186,8 +165,11 @@ function update(data, selectedDate)
           .attr("d", area(later))
           .style("fill-opacity", 0.4);
 
-  svg.select(".line")
-      .attr("d", line(filtered));
+  svg.select(".scopeLine")
+      .attr("d", scopeLine(filtered));
+  svg.select(".scopeLineLater")
+          .attr("d", scopeLine(later))
+          .style("stroke-opacity", 0.3);
 
 
   var endDate;
