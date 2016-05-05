@@ -9,18 +9,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
  
 var routes = require("./routes/routes.js")(app);
 
+var parsedRows = [];
 var csvConverter = new Converter();
-
 
 csvConverter.on("end_parsed", function (jsonObj) {
    console.log("done parsing csv"); 
+   
+   app.set('rawCfd', parsedRows);
    
    var server = app.listen(3000, function () {
         console.log("Listening on port %s...", server.address().port);
    });
 });
 
-var parsedRows = [];
 csvConverter.on("record_parsed", function(resultRow, rawRow, rowIndex) {
     parsedRows.push(resultRow);
 });
