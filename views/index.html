@@ -165,7 +165,7 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .text("Cards");
 
         d3.select("body").on('mousemove', function () {
-            var xPos = d3.mouse(this)[0] + 40;
+            var xPos = d3.mouse(this)[0];
             var xDate = x.invert(xPos);
             var oDate= new Date(xDate);
             var sdate = oDate.getDate() + '/' + oDate.getMonth() + '/' + oDate.getFullYear();
@@ -173,9 +173,9 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
 update(data, sdate);
 
             hoverLine
-                .attr("x1", xPos - 115)
+                .attr("x1", xPos - margin.left)
                 .attr("y1", 0)
-                .attr("x2", xPos - 115)
+                .attr("x2", xPos - margin.left)
                 .attr("y2", 500)
                 .style("opacity", 1);
 
