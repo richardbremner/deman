@@ -37,10 +37,16 @@ body {
   stroke-width: 2.5px;
 }
 
-.continuedScope {
+.correlate {
   fill: none;
-  stroke-dasharray: 5,3
-  stroke: #333
+  stroke: black;
+  stroke-width: 2.5px;    
+}
+
+.hover-line { 
+  stroke: black;  
+  fill: none;
+  stroke-width: 2px;
 }
 
 </style>
@@ -87,13 +93,14 @@ var meet = d3.svg.line()
     .y(function(d) { return y(d.Scope); });
 
 
-var scopeChangeContinuations
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
 
 d3.json("http://localhost:3000/cfd", function(error, data) {
   if (error) throw error;
@@ -102,7 +109,11 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
   var endValue;
   var projDate;
   var projScope;
+  var maxScope = 0;
   data.forEach(function(d) {
+      if (projScope > maxScope) {
+        maxScope = projScope;
+    }
     // needs re-naming throughout, just quick and hacky for now
     d.Date = parseDate(d.Date);
     d.Production = +d.Production;
@@ -114,7 +125,20 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
     projDate = new Date(endDate)
     projDate.setDate(projDate.getDate() + d.Projection);
     projScope = d.Scope;
+    
+    
   });
+
+// Hover line. 
+var hoverLineGroup = svg.append("g")
+					.attr("class", "hover-line");
+
+var hoverLine = hoverLineGroup
+	.append("line")
+		.attr("x1", 0).attr("x2", 0) 
+		.attr("y1", 500).attr("y2", 0); 
+// Hide hover line by default.
+hoverLine.style("opacity", 1e-6);
 
   x.domain(d3.extent(data, function(d) { return d.Date; }));
   y.domain([0, d3.max(data, function(d) { return d.Scope; })]);
@@ -135,12 +159,10 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .attr("class", "trend")
       .attr("d", trend(trendData));
 
-  var meetData = data.slice(0);
+  var meetData = data;
   svg.append("path")
       .attr("class", "meet")
       .attr("d", meet(meetData));
-
-
 
   svg.append("g")
       .attr("class", "x axis")
@@ -163,13 +185,24 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
     });
 
         d3.select("body").on('mousemove', function () {
-            var xPos = d3.mouse(this)[0];
+            var xPos = d3.mouse(this)[0] + 40;
             var xDate = x.invert(xPos);
             var oDate= new Date(xDate);
             var sdate = oDate.getDate() + '/' + oDate.getMonth() + '/' + oDate.getFullYear();
 
-        update(data, sdate);
-    });
+            update(data, sdate, meetData);
+            
+            hoverLine
+                .attr("x1", xPos - 115)
+                .attr("y1", 0)
+                .attr("x2", xPos - 115)
+                .attr("y2", 500)
+                .style("opacity", 1);
+
+        }).on("mouseout", function() {
+            console.log('mouseout');
+            hoverLine.style("opacity", 1e-6);
+        });
 
 });
 
