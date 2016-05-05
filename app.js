@@ -26,7 +26,7 @@ csvConverter.on("end_parsed", function (jsonObj) {
 csvConverter.on("record_parsed", function(resultRow, rawRow, rowIndex) {
     resultRow.Projection = 0;
     
-    var windowSizeInDays = 20;
+    var windowSizeInDays = 40;
     
     if (rowIndex >= windowSizeInDays) {
         var done = resultRow.Production;
