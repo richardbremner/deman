@@ -30,6 +30,13 @@ body {
   stroke-width: 2.5px;
 }
 
+.meet {
+  fill: none;
+  stroke: forestgreen;
+  stroke-dasharray: 5, 5;
+  stroke-width: 2.5px;
+}
+
 .continuedScope {
   fill: none;
   stroke-dasharray: 5,3
@@ -75,6 +82,11 @@ var trend = d3.svg.line()
     .x(function(d) { return x(d.Date); })
     .y(function(d) { return y(d.Value); });
 
+var meet = d3.svg.line()
+    .x(function(d) { return x(d.Date); })
+    .y(function(d) { return y(d.Scope); });
+
+
 var scopeChangeContinuations
 
 var svg = d3.select("body").append("svg")
@@ -119,6 +131,13 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
   svg.append("path")
       .attr("class", "trend")
       .attr("d", trend(trendData));
+
+  var meetData = data.slice(0);
+  svg.append("path")
+      .attr("class", "meet")
+      .attr("d", meet(meetData));
+
+
 
   svg.append("g")
       .attr("class", "x axis")
