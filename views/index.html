@@ -38,6 +38,12 @@ body {
   stroke-width: 2.5px;
 }
 
+.hover-line {
+  stroke: black;
+  fill: none;
+  stroke-width: 2px;
+}
+
 </style>
 <body>
 <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -92,7 +98,11 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
   var endValue;
   var projDate;
   var projScope;
+  var maxScope = 0;
   data.forEach(function(d) {
+    if (projScope > maxScope) {
+      maxScope = projScope;
+    }
     // needs re-naming throughout, just quick and hacky for now
     d.Date = parseDate(d.Date);
     d.Production = +d.Production;
@@ -105,6 +115,17 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
     projDate.setDate(projDate.getDate() + d.Projection);
     projScope = d.Scope;
   });
+
+  // Hover line.
+  var hoverLineGroup = svg.append("g")
+    .attr("class", "hover-line");
+
+  var hoverLine = hoverLineGroup
+  	.append("line")
+  	.attr("x1", 0).attr("x2", 0)
+  	.attr("y1", 500).attr("y2", 0);
+  // Hide hover line by default.
+  hoverLine.style("opacity", 1e-6);
 
   x.domain(d3.extent(data, function(d) { return d.Date; }));
   y.domain([0, d3.max(data, function(d) { return d.Scope; })]);
@@ -144,13 +165,27 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .text("Cards");
 
         d3.select("body").on('mousemove', function () {
-            var xPos = d3.mouse(this)[0];
+            var xPos = d3.mouse(this)[0] + 40;
             var xDate = x.invert(xPos);
             var oDate= new Date(xDate);
             var sdate = oDate.getDate() + '/' + oDate.getMonth() + '/' + oDate.getFullYear();
 
-        update(data, sdate);
-    });
+update(data, sdate);
+
+            hoverLine
+                .attr("x1", xPos - 115)
+                .attr("y1", 0)
+                .attr("x2", xPos - 115)
+                .attr("y2", 500)
+                .style("opacity", 1);
+
+
+
+    }).on("mouseout", function() {
+
+            hoverLine.style("opacity", 1e-6);
+        });
+;
 
 });
 
@@ -159,9 +194,9 @@ function update(data, selectedDate)
   var parsed = parseDate(selectedDate);
 
   var filtered = data.filter(function (d){ return d.Date <= parsed });
-  var lastInFilter = filtered.sort(function(a,b){
+  /*var lastInFilter = filtered.sort(function(a,b){
 
-  })
+  })*/
 
   var later = data.filter(function (d){ return d.Date >= d3.max(filtered, function(d) { return d.Date; })});
 
