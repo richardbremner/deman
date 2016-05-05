@@ -23,6 +23,25 @@ csvConverter.on("end_parsed", function (jsonObj) {
 });
 
 csvConverter.on("record_parsed", function(resultRow, rawRow, rowIndex) {
+    resultRow.Projection = 0;
+    
+    var windowSizeInDays = 20;
+    
+    if (rowIndex >= windowSizeInDays) {
+        var done = resultRow.Production;
+        var scope = resultRow.Scope;
+        var lastDone = parsedRows[rowIndex-windowSizeInDays].Production;
+        var delta = done - lastDone;
+        var perDay = delta / windowSizeInDays;
+        var remaining = scope - done;
+        
+        if (perDay === 0) {
+            resultRow.Projection = parsedRows[rowIndex-1].Projection;   
+        } else {
+            resultRow.Projection = Math.round(remaining / perDay);    
+        }
+    }
+    
     parsedRows.push(resultRow);
 });
 
