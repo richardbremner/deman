@@ -19,12 +19,13 @@ body {
 
 .line {
   fill: none;
-  stroke: steelblue;
+  stroke: forestgreen;
   stroke-width: 1.5px;
 }
 
 </style>
 <body>
+    <a href="javascript:void(0)" class="filter">Filter</a>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -49,42 +50,41 @@ var yAxis = d3.svg.axis()
     .orient("left");
 
 var area = d3.svg.area()
-    .x(function(d) { return x(d.date); })
+    .x(function(d) { return x(d.Date); })
     .y0(height)
-    .y1(function(d) { return y(d.close); });
+    .y1(function(d) { return y(d.Production); });
     
 var line = d3.svg.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.scope); });
+    .x(function(d) { return x(d.Date); })
+    .y(function(d) { return y(d.Scope); });
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+    
 d3.json("http://localhost:3000/cfd", function(error, data) {
   if (error) throw error;
 
   data.forEach(function(d) {
     // needs re-naming throughout, just quick and hacky for now
-    d.date = parseDate(d.Date);
-    d.close = +d.Production;
-    d.scope = +d.Scope;
+    d.Date = parseDate(d.Date);
+    d.Production = +d.Production;
+    d.Scope = +d.Scope;
+    d.Projection = +d.Projection;
   });
 
-  x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain([0, d3.max(data, function(d) { return d.scope; })]);
+  x.domain(d3.extent(data, function(d) { return d.Date; }));
+  y.domain([0, d3.max(data, function(d) { return d.Scope; })]);
 
   svg.append("path")
-      .datum(data)
       .attr("class", "area")
-      .attr("d", area);
+      .attr("d", area(data));
       
   svg.append("path")
-      .datum(data)
       .attr("class", "line")
-      .attr("d", line);
+      .attr("d", line(data));
 
   svg.append("g")
       .attr("class", "x axis")
@@ -100,6 +100,23 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Cards");
+      
+  d3.selectAll(".filter")
+    .on("click", function() {
+        update(data, "01/01/2016");
+    });
 });
+
+function update(data, selectedDate)
+{
+    var parsed = parseDate(selectedDate);
+    var filtered = data.filter(function (d){ return d.Date < parsed });
+    
+    svg.select(".area")
+        .attr("d", area(filtered));
+        
+    svg.select(".line")
+        .attr("d", line(filtered));
+}
 
 </script>
