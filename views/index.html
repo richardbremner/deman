@@ -170,6 +170,7 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
             var oDate= new Date(xDate);
             var sdate = oDate.getDate() + '/' + oDate.getMonth() + '/' + oDate.getFullYear();
 
+if(xPos > margin.left){
 update(data, sdate);
 
             hoverLine
@@ -178,7 +179,7 @@ update(data, sdate);
                 .attr("x2", xPos - margin.left)
                 .attr("y2", 500)
                 .style("opacity", 1);
-
+} else {hoverLine.style("opacity", 1e-6);}
 
 
     }).on("mouseout", function() {
