@@ -176,8 +176,9 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
 function update(data, selectedDate)
 {
   var parsed = parseDate(selectedDate);
+
   var filtered = data.filter(function (d){ return d.Date <= parsed });
-  var later = data.filter(function (d){ return d.Date >= parsed });
+  var later = data.filter(function (d){ return d.Date >= d3.max(filtered, function(d) { return d.Date; })});
 
   svg.select(".area")
       .attr("d", area(filtered));
