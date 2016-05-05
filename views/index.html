@@ -17,10 +17,17 @@ body {
   fill: steelblue;
 }
 
-.scopeLine, .scopeLineLater {
+.scopeLine {
   fill: none;
   stroke: forestgreen;
   stroke-width: 2.5px;
+}
+
+.scopeLineLater {
+  fill: none;
+  stroke: forestgreen;
+  stroke-width: 2.5px;
+  stroke-dasharray: 5, 5;
 }
 
 .trend {
@@ -167,9 +174,9 @@ function update(data, selectedDate)
 
   svg.select(".scopeLine")
       .attr("d", scopeLine(filtered));
+
   svg.select(".scopeLineLater")
-          .attr("d", scopeLine(later))
-          .style("stroke-opacity", 0.3);
+          .attr("d", scopeLine(later));
 
 
   var endDate;
