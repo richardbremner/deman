@@ -230,8 +230,9 @@ function update(data, selectedDate)
   });
 
   var trendData = [{ Date: endDate, Value: endValue }, { Date: projDate, Value: projScope }];
+if(projDate > endDate){
   svg.select(".trend")
-      .attr("d", trend(trendData));
+      .attr("d", trend(trendData)).style("stroke-opacity", 1);} else {svg.select(".trend").style("stroke-opacity", 0)}
 }
 
 </script>
