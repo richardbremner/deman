@@ -4,6 +4,7 @@ var app = express();
 var fs = require("fs");
 var Converter = require("csvtojson").Converter;
 
+app.set('view engine', 'jade');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
  
