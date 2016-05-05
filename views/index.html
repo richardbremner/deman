@@ -139,6 +139,16 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
     .on("click", function() {
         update(data, "01/01/2016");
     });
+    
+        d3.select("body").on('mousemove', function () {
+            var xPos = d3.mouse(this)[0];
+            var xDate = x.invert(xPos);        
+            var oDate= new Date(xDate);
+            var sdate = oDate.getDate() + '/' + oDate.getMonth() + '/' + oDate.getFullYear();
+ 
+        update(data, sdate);
+    });
+
 });
 
 function update(data, selectedDate)
