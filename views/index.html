@@ -164,7 +164,7 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
       .style("text-anchor", "end")
       .text("Cards");
 
-        d3.select("body").on('mousemove', function () {
+        d3.select("svg").on('mousemove', function () {
             var xPos = d3.mouse(this)[0];
             var xDate = x.invert(xPos);
             var oDate= new Date(xDate);
