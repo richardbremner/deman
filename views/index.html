@@ -166,9 +166,10 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
 
         d3.select("svg").on('mousemove', function () {
             var xPos = d3.mouse(this)[0];
-            var xDate = x.invert(xPos);
+            var xDate = x.invert(xPos - margin.left);
             var oDate= new Date(xDate);
-            var sdate = oDate.getDate() + '/' + oDate.getMonth() + '/' + oDate.getFullYear();
+
+            var sdate = oDate.getDate() + '/' + (oDate.getMonth() + 1)  + '/' + oDate.getFullYear();
 
 if(xPos > margin.left){
 update(data, sdate);
@@ -192,6 +193,7 @@ update(data, sdate);
 
 function update(data, selectedDate)
 {
+//  console.log(selectedDate);
   var parsed = parseDate(selectedDate);
 
   var filtered = data.filter(function (d){ return d.Date <= parsed });
