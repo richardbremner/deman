@@ -3,7 +3,7 @@
 <style>
 
 body {
-  font: 10px sans-serif;
+  font: 14px sans-serif;
 }
 
 .axis path,
@@ -17,17 +17,18 @@ body {
   fill: steelblue;
 }
 
-.scopeLine {
+.scopeLine, .scopeLineLater {
   fill: none;
   stroke: forestgreen;
   stroke-width: 2.5px;
 }
 
-.scopeLineLater {
+.scopeContinuation {
   fill: none;
   stroke: forestgreen;
   stroke-width: 2.5px;
   stroke-dasharray: 5, 5;
+  stroke-opacity: 0.4;
 }
 
 .trend {
@@ -35,12 +36,6 @@ body {
   stroke: darkred;
   stroke-dasharray: 5, 5;
   stroke-width: 2.5px;
-}
-
-.continuedScope {
-  fill: none;
-  stroke-dasharray: 5,3
-  stroke: #333
 }
 
 </style>
@@ -164,6 +159,10 @@ function update(data, selectedDate)
   var parsed = parseDate(selectedDate);
 
   var filtered = data.filter(function (d){ return d.Date <= parsed });
+  var lastInFilter = filtered.sort(function(a,b){
+
+  })
+
   var later = data.filter(function (d){ return d.Date >= d3.max(filtered, function(d) { return d.Date; })});
 
   svg.select(".area")
@@ -176,7 +175,8 @@ function update(data, selectedDate)
       .attr("d", scopeLine(filtered));
 
   svg.select(".scopeLineLater")
-          .attr("d", scopeLine(later));
+          .attr("d", scopeLine(later))
+          .style("stroke-opacity", 0.4);
 
 
   var endDate;
