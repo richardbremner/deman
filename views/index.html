@@ -41,7 +41,7 @@ body {
 .hover-line {
   stroke: black;
   fill: none;
-  stroke-width: 2px;
+  stroke-width: 1px;
 }
 
 </style>
@@ -49,9 +49,9 @@ body {
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 50},
+var margin = {top: 20, right: 20, bottom: 130, left: 50},
     width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 600 - margin.top - margin.bottom;
 
 var parseDate = d3.time.format("%d/%m/%Y").parse;
 
@@ -124,6 +124,13 @@ d3.json("http://localhost:3000/cfd", function(error, data) {
   	.append("line")
   	.attr("x1", 0).attr("x2", 0)
   	.attr("y1", 500).attr("y2", 0);
+
+    var hoverText = hoverLineGroup
+    .append("text")
+      .attr("transform", "translate(0, 435)")
+      .attr("dy", ".71em")
+      //.style("text-anchor", "end")
+      .text("");
   // Hide hover line by default.
   hoverLine.style("opacity", 1e-6);
 
@@ -180,6 +187,11 @@ update(data, sdate);
                 .attr("x2", xPos - margin.left)
                 .attr("y2", 500)
                 .style("opacity", 1);
+
+              hoverText
+              .attr("transform", "translate("+ (xPos - margin.left) +", 500)")
+              .text(sdate);
+
 } else {hoverLine.style("opacity", 1e-6);}
 
 
